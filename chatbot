@@ -1,0 +1,72 @@
+import json
+from langchain.memory import BaseMemory
+from langchain.llms import OpenAI
+
+class PersistentMemory(BaseMemory):
+    def __init__(self, memory_file='persistent_memory.json', llm=None):
+        super().__init__()
+        self.memory_file = memory_file
+        self.static_memory = self.load_memory()
+        self.dynamic_memory = []
+        self.llm = llm
+
+    def load_memory(self):
+        try:
+            with open(self.memory_file, 'r') as file:
+                return json.load(file)
+        except FileNotFoundError:
+            return {"name": "", "school_name": "", "phone_number": ""}
+
+    def save_memory(self):
+        with open(self.memory_file, 'w') as file:
+            json.dump(self.static_memory, file)
+
+    def add_to_memory(self, interaction):
+        self.dynamic_memory.append(interaction)
+        extracted_info = self.extract_information(interaction)
+        if extracted_info:
+            self.static_memory.update(extracted_info)
+            self.save_memory()
+
+    def extract_information(self, text):
+        prompt = f"Extract the following information if provided in the text: name, school name, phone number.\nText: {text}\nExtracted Information:"
+        response = self.llm(prompt)
+        try:
+            extracted_info = json.loads(response)
+            return extracted_info
+        except json.JSONDecodeError:
+            return None
+
+    def get_memory(self):
+        return self.static_memory, self.dynamic_memory
+
+
+
+
+from langchain.llms import OpenAI
+from langchain.chains import ConversationChain
+
+# Initialize the language model
+openai_api_key = "your_openai_api_key"
+llm = OpenAI(api_key=openai_api_key)
+
+# Use the custom PersistentMemory class with LLM
+persistent_memory = PersistentMemory(llm=llm)
+
+conversation = ConversationChain(
+    llm=llm,
+    memory=persistent_memory
+)
+
+# Chat function
+def chat():
+    print("Start chatting with the bot (type 'exit' to stop):")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == 'exit':
+            break
+        response = conversation.run(input=user_input)
+        print(f"Bot: {response}")
+
+if __name__ == "__main__":
+    chat()
