@@ -1,0 +1,54 @@
+com.sun.security.jgss.krb5.initiate {
+    com.sun.security.auth.module.Krb5LoginModule required
+    useTicketCache=false
+    doNotPrompt=false
+    principal="your_principal@REALM.COM"
+    debug=true
+    useKeyTab=false
+    storeKey=true
+    useFirstPass=false;
+};
+
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+import javax.security.auth.kerberos.KerberosTicket;
+import java.security.PrivilegedAction;
+import java.util.Set;
+
+public class KerberosAuth {
+
+    public static void main(String[] args) {
+        System.setProperty("java.security.auth.login.config", "path/to/jaas.conf");
+        System.setProperty("java.security.krb5.conf", "path/to/krb5.conf");
+
+        try {
+            // Initialize LoginContext
+            LoginContext loginContext = new LoginContext("com.sun.security.jgss.krb5.initiate");
+            
+            // Perform the login
+            loginContext.login();
+            
+            // Get the authenticated subject
+            Subject subject = loginContext.getSubject();
+
+            // Output the Kerberos credentials stored in the subject
+            Set<KerberosTicket> kerberosTickets = subject.getPrivateCredentials(KerberosTicket.class);
+            if (!kerberosTickets.isEmpty()) {
+                System.out.println("Successfully authenticated using Kerberos.");
+            }
+
+            // Run any actions as the authenticated subject (e.g., make authenticated calls)
+            Subject.doAs(subject, (PrivilegedAction<Void>) () -> {
+                // Action requiring authenticated user (e.g., HTTP request, file access)
+                System.out.println("Performing actions as authenticated user.");
+                return null;
+            });
+
+        } catch (LoginException e) {
+            System.out.println("Authentication failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}
+
