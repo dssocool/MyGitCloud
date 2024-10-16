@@ -1,16 +1,16 @@
-Operation	CPU Utilization (Cores)	Memory Utilization (GB)
-Map/Filter	1-2 cores per executor	1-2 GB per executor
-FlatMap	1-3 cores per executor	1-3 GB per executor
-Join (non-broadcast)	3-6 cores per executor	8-16 GB per executor
-Broadcast Join	1-3 cores per executor	4-8 GB per executor (small dataset fits into memory)
-GroupByKey	4-8 cores per executor	16-32 GB per executor
-ReduceByKey	3-6 cores per executor	12-24 GB per executor
-Repartition	2-4 cores per executor	4-8 GB per executor
-Coalesce	1-2 cores per executor	2-4 GB per executor
-Sort	4-8 cores per executor	16-32 GB per executor
-Window Functions	4-8 cores per executor	16-32 GB per executor
-Union	2-3 cores per executor	4-8 GB per executor
-Distinct	4-8 cores per executor	16-32 GB per executor
-Cache/Persist	1-2 cores per executor	Depends on dataset size (high, can be up to 50-75% of executor memory)
-Cartesian	6-12 cores per executor	32-64 GB per executor
-ZipWithIndex	1-2 cores per executor	2-4 GB per executor
+Operation	Estimated CPU Utilization (cores/GB)	Estimated Memory Utilization (GB/GB)
+Map/Filter	0.05 - 0.1 cores/GB	0.1 - 0.2 GB/GB
+FlatMap	0.1 - 0.15 cores/GB	0.2 - 0.3 GB/GB
+Join (non-broadcast)	0.3 - 0.5 cores/GB	1 - 1.5 GB/GB
+Broadcast Join	0.1 - 0.2 cores/GB	0.5 - 1 GB/GB
+GroupByKey	0.4 - 0.6 cores/GB	1.5 - 2.5 GB/GB
+ReduceByKey	0.3 - 0.4 cores/GB	1 - 1.5 GB/GB
+Repartition	0.1 - 0.2 cores/GB	0.3 - 0.5 GB/GB
+Coalesce	0.05 - 0.1 cores/GB	0.2 - 0.3 GB/GB
+Sort	0.4 - 0.6 cores/GB	1.5 - 2.5 GB/GB
+Window Functions	0.4 - 0.6 cores/GB	1.5 - 2.5 GB/GB
+Union	0.1 - 0.2 cores/GB	0.3 - 0.5 GB/GB
+Distinct	0.4 - 0.6 cores/GB	1.5 - 2.5 GB/GB
+Cache/Persist	0.05 - 0.1 cores/GB	Varies based on storage level (high for MEMORY_ONLY)
+Cartesian	0.5 - 1 cores/GB	2 - 4 GB/GB
+ZipWithIndex	0.05 - 0.1 cores/GB	0.2 - 0.3 GB/GB
